@@ -458,6 +458,52 @@ export class PhysicsWorld {
     return affectedBodies;
   }
 
+  public setGravity(x: number, y: number) {
+    this.gravityScale = { x, y };
+    this.world.gravity.x = x;
+    this.world.gravity.y = y;
+  }
+
+  public enableSuperBounciness(enabled: boolean) {
+    this.bouncinessMode = enabled;
+    this.setupBoundaries();
+    this.hazardBodies.forEach(b => {
+      b.restitution = enabled ? 1.25 : 0.4;
+    });
+  }
+
+  public setLowFriction(enabled: boolean) {
+    this.lowFrictionMode = enabled;
+    this.setupBoundaries();
+    this.hazardBodies.forEach(b => {
+      b.friction = enabled ? 0.001 : 0.4;
+    });
+  }
+
+  public spawnItem(config: SpawnItemConfig, spawnX?: number, spawnY?: number): Matter.Body {
+    return this.spawnHazard(config, spawnX, spawnY);
+  }
+
+  public step(vortex?: { x: number; y: number; strength: number; active: boolean }) {
+    this.updatePhysicsStep(vortex);
+  }
+
+  public applyVortexForce(x: number, y: number, strength: number, maxDist: number = 380) {
+    const allBodies = [...this.hazardBodies, ...this.characterBodies];
+    allBodies.forEach(body => {
+      const dx = x - body.position.x;
+      const dy = y - body.position.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 10 && dist < maxDist) {
+        const pull = (strength / (dist * 0.8)) * 0.003;
+        Matter.Body.applyForce(body, body.position, {
+          x: (dx / dist) * pull,
+          y: (dy / dist) * pull
+        });
+      }
+    });
+  }
+
   public updatePhysicsStep(vortex?: { x: number; y: number; strength: number; active: boolean }) {
     // 1. Apply customized gravity
     this.world.gravity.x = this.gravityScale.x;
@@ -513,5 +559,14 @@ export class PhysicsWorld {
   public clearHazards() {
     this.hazardBodies.forEach(b => Matter.Composite.remove(this.world, b));
     this.hazardBodies = [];
+  }
+
+  public destroy() {
+    this.clearHazards();
+    this.characterBodies.forEach(b => Matter.Composite.remove(this.world, b));
+    this.characterConstraints.forEach(c => Matter.Composite.remove(this.world, c));
+    this.wallBodies.forEach(b => Matter.Composite.remove(this.world, b));
+    Matter.World.clear(this.world, false);
+    Matter.Engine.clear(this.engine);
   }
 }

@@ -152,7 +152,7 @@ Generate an absurd, funny physics mutation event to challenge the player right n
 Return structured JSON following the exact schema.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.7-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         systemInstruction: "You are the witty, eccentric AI Director of a comedy physics game. Keep commentary punchy (1-2 sentences maximum), hilarious, and sarcastic.",
@@ -239,7 +239,7 @@ Output structured JSON:
 }`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.7-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
