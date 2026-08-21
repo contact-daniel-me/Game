@@ -1,0 +1,6 @@
+{
+  "name": "Chaos Director: The Absurd Physics Arcade",
+  "description": "A fast-paced comedy physics arcade game where an eccentric AI Chaos Director dynamically mutates physics rules, inverts gravity, spawns ridiculous items, and delivers witty commentary.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
